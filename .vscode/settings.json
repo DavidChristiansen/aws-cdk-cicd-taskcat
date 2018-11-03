@@ -1,0 +1,13 @@
+{
+	"files.exclude": {
+		"**/.git": true,
+		"**/.svn": true,
+		"**/.hg": true,
+		"**/CVS": true,
+		"**/.DS_Store": true,
+		"**/*.js": true,
+		"**/*.d.ts": true,
+		"**/*.js.map": true
+	},
+	"python.pythonPath": "/usr/local/bin/python3"
+}
