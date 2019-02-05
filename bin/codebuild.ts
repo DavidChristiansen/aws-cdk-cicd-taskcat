@@ -8,7 +8,7 @@ import { Role } from '@aws-cdk/aws-iam';
 export interface CodeBuildProps {
     pipeline: codepipeline.Pipeline;
     githubRepoName: string;
-    artifactBucket: s3.BucketRefProps;
+    artifactBucket: s3.IBucket;
     role: Role;
 }
 export class CodeBuild extends cdk.Construct {
@@ -20,7 +20,7 @@ export class CodeBuild extends cdk.Construct {
         const project = new codebuild.Project(this, 'Build', {
             description: `Submit build jobs for ${props.githubRepoName} as part of CI/CD pipeline`,
             environment: {
-                buildImage: new LinuxBuildImage("aws/codebuild/python:3.6.5"),
+                buildImage: LinuxBuildImage.UBUNTU_14_04_RUBY_2_5_1,
                 computeType: ComputeType.Small,
                 environmentVariables: {
                     "PROJECTNAME": {

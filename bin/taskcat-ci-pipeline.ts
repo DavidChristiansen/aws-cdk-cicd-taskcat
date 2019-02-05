@@ -24,9 +24,9 @@ class TaskcatCiPipelineStack extends cdk.Stack {
     const settings: Settings = {
       QSS3BucketName: "aws-quickstart",
       QSS3KeyPrefix: "quickstart-taskcat-ci/",
-      GitHubUser: this.getContext('githubuser'),
-      GitHubOAuthToken: this.getContext('authtoken'),
-      GitHubRepoName: this.getContext('githubreponame'),
+      GitHubUser: this.node.getContext('githubuser'),
+      GitHubOAuthToken: this.node.getContext('authtoken'),
+      GitHubRepoName: this.node.getContext('githubreponame'),
       SourceRepoBranch: "develop",
       ReleaseBranch: "master"
     };
@@ -67,7 +67,7 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       SourceRepoBranch: settings.SourceRepoBranch,
       ReleaseBranch: settings.ReleaseBranch
     });
-    var awsRegion = new cdk.AwsRegion();
+    var awsRegion = new cdk.Aws().region;
     new cdk.Output(this, 'CodePipelineURL', {
       description: 'The URL of the created Pipeline',
       value: `https://${awsRegion}.console.aws.amazon.com/codepipeline/home?region=${awsRegion}#/view/${codePipeline.Pipeline.pipelineName}`,

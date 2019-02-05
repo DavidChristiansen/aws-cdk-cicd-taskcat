@@ -5,7 +5,7 @@ import { PolicyStatementEffect } from '@aws-cdk/aws-iam';
 import iam = require('@aws-cdk/aws-iam');
 
 export interface CodePipeLineProps {
-    artifactBucketRef: s3.BucketRefProps
+    artifactBucketRef: s3.Bucket
 }
 export class CodePipeline extends cdk.Construct {
     public readonly Pipeline: codepipeline.Pipeline;

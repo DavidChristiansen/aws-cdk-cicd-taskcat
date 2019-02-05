@@ -19,6 +19,7 @@ export class GitHub extends cdk.Construct {
             repo: props.GitHubRepoName,
             branch: props.SourceRepoBranch,
             oauthToken: new cdk.Secret(props.GitHubOAuthToken),
+            pollForSourceChanges: true,
             runOrder: 1
         });
     }

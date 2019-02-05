@@ -1,6 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Bucket, BucketRefProps } from '@aws-cdk/aws-s3';
+import { Bucket } from '@aws-cdk/aws-s3';
 import { Role } from '@aws-cdk/aws-iam';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 
@@ -15,7 +15,7 @@ export interface LambdaProps {
     ReleaseBranch: string;
 }
 export class Lambda extends cdk.Construct {
-    public readonly GitMergeLambda: lambda.FunctionRefProps;
+    public readonly GitMergeLambda: lambda.Function;
 
     constructor(parent: cdk.Construct, name: string, props: LambdaProps) {
         super(parent, name);
