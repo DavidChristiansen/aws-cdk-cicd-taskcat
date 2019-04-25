@@ -1,12 +1,13 @@
 import cdk = require('@aws-cdk/cdk');
 import lambda = require('@aws-cdk/aws-lambda');
-import { Bucket } from '@aws-cdk/aws-s3';
+import s3 = require('@aws-cdk/aws-s3');
 import { Role } from '@aws-cdk/aws-iam';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
 import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
+import { S3 } from './s3';
 
 export interface LambdaProps {
-    LambdaZipsBucket: string;
+    LambdaZipsBucketName: string;
     QSS3KeyPrefix: string;
     GitMergeRole: Role;
     pipeline: codepipeline.Pipeline;
@@ -20,15 +21,15 @@ export class Lambda extends cdk.Construct {
 
     constructor(parent: cdk.Construct, name: string, props: LambdaProps) {
         super(parent, name);
-        const bucket = Bucket.import(this, 'lambdazipsbucket', {
-            bucketName: props.LambdaZipsBucket
-        });
-        const key = `${props.QSS3KeyPrefix}functions/package/git_merge.zip`;
+        const bucket = s3.Bucket.import(this, 'Bucket',{
+            bucketName: props.LambdaZipsBucketName
+        })
+        const key = `${props.QSS3KeyPrefix}functions/package/lambda.zip`;
         const gitMergeLambda = new lambda.Function(this, 'Git_Merge', {
             runtime: lambda.Runtime.Python36,
             timeout: 30,
             code: lambda.Code.bucket(bucket, key),
-            handler: 'git_merge.handler',
+            handler: 'git_merge.lambda_handler',
             description: 'Merge github branches',
             functionName: 'Git_Merge',
             role: props.GitMergeRole,

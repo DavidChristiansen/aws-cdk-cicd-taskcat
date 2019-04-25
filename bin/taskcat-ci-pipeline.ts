@@ -31,15 +31,23 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       BaseBranch: this.node.getContext('github_repo_branch_base'),
     };
     const s3 = new S3(this, 's3');
-    const cloudFormation = new CloudFormation(this, 'cloudFormation', {
-      ArtifactBucket: s3.ArtifactBucket,
+    const copyLambdasStack = new CloudFormation(this, 'CopyLambdasStack', `https://${settings.QSS3BucketName}.s3.amazonaws.com/${settings.QSS3KeyPrefix}templates/copy-lambdas.template`,
+    {
+      BucketName: s3.ArtifactBucket.bucketName,
       QSS3BucketName: settings.QSS3BucketName,
       QSS3KeyPrefix: settings.QSS3KeyPrefix
     });
-    const roles = new Roles(this, 'roles', {
-      artifactBucketRef: s3.ArtifactBucket
+    const LambdaZipsBucketName = copyLambdasStack.Stack.getAtt("Outputs.LambdaZipsBucket").toString();
+    const ssmStack = new CloudFormation(this, 'SSMStack', `https://${settings.QSS3BucketName}.s3.amazonaws.com/${settings.QSS3KeyPrefix}templates/ssm.template`,
+    {
+      GithubToken: settings.GitHubOAuthToken,
+      LambdaZipsBucket: LambdaZipsBucketName,
+      QSS3KeyPrefix: settings.QSS3KeyPrefix
     });
-
+    const roles = new Roles(this, 'roles', {
+      artifactBucketRef: s3.ArtifactBucket,
+      kmsKeyArn: ssmStack.Stack.getAtt("Outputs.KMSKeyArn").toString()
+    });
     const codePipeline = new CodePipeline(this, 'codepipeline', {
       artifactBucketRef: s3.ArtifactBucket
     });
@@ -54,11 +62,15 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       input: github.SourceOutput,
       pipeline: codePipeline.Pipeline,
       role: roles.CodeBuildServiceRole,
-      githubRepoName: settings.GitHubRepoName,
-      artifactBucket: s3.ArtifactBucket
+      GitHubRepoName: settings.GitHubRepoName,
+      artifactBucket: s3.ArtifactBucket,
+      GitHubOAuthToken: settings.GitHubOAuthToken,
+      GitHubUser: settings.GitHubUser,
+      HeadBranch: settings.HeadBranch,
+      BaseBranch: settings.BaseBranch
     });
     new Lambda(this, 'lambda', {
-      LambdaZipsBucket: cloudFormation.LambdaZipsBucket,
+      LambdaZipsBucketName: LambdaZipsBucketName,
       GitMergeRole: roles.GitMergeRole,
       QSS3KeyPrefix: settings.QSS3KeyPrefix,
       pipeline: codePipeline.Pipeline,

@@ -8,7 +8,8 @@ export class S3 extends cdk.Construct {
         super(parent, name);
 
         const bucket = new s3.Bucket(this, 'ArtifactBucket', {
-            versioned: true
+            versioned: true,
+            bucketName: 'modernwebapp-typescripttesting'
         });
         bucket.addLifecycleRule({
             noncurrentVersionExpirationInDays: 30,

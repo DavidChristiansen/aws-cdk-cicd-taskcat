@@ -6,20 +6,16 @@ import { Lambda } from './lambda';
 export interface CloudFormationProps {
     QSS3BucketName: string;
     QSS3KeyPrefix: string;
+    TemplateURL:string;
     ArtifactBucket: s3.Bucket;
 }
 export class CloudFormation extends cdk.Construct {
-    LambdaZipsBucket: string;
-    constructor(parent: cdk.Construct, name: string, props: CloudFormationProps) {
+    Stack: cloudformation.CfnStack;
+    constructor(parent: cdk.Construct, name: string, templateURL: string, props: any) {
         super(parent, name);
-        const stack = new cloudformation.CfnStack(this, 'NestedStack', {
-            templateUrl: `https://${props.QSS3BucketName}.s3.amazonaws.com/${props.QSS3KeyPrefix}templates/copy-lambdas.template`,
-            parameters: {
-                BucketName: props.ArtifactBucket.bucketName,
-                QSS3BucketName: props.QSS3BucketName,
-                QSS3KeyPrefix: props.QSS3KeyPrefix,
-            }
+        this.Stack = new cloudformation.CfnStack(this, 'NestedStack', {
+            templateUrl: templateURL,
+            parameters: props
         });
-        this.LambdaZipsBucket = stack.getAtt("Outputs.LambdaZipsBucket").toString();
     }
 }

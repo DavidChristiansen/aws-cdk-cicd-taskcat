@@ -6,6 +6,7 @@ import { PolicyStatementEffect } from '@aws-cdk/aws-iam';
 
 export interface RolesProps {
     artifactBucketRef: s3.Bucket;
+    kmsKeyArn: string;
 }
 
 export class Roles extends cdk.Construct {
@@ -34,7 +35,9 @@ export class Roles extends cdk.Construct {
         this.GitMergeRole.addToPolicy(new iam.PolicyStatement(PolicyStatementEffect.Allow)
             .addActions("ssm:Describe*", "ssm:Get*", "ssm:List*")
             .addResource("*"));
-
+        this.GitMergeRole.addToPolicy(new iam.PolicyStatement(PolicyStatementEffect.Allow)
+            .addActions("kms:Decrypt*")
+            .addResource(props.kmsKeyArn));
         this.CodeBuildServiceRole = new iam.Role(this, 'CodeBuildServiceRole', {
             assumedBy: new iam.ServicePrincipal('codebuild.amazonaws.com'),
             path: "/",
