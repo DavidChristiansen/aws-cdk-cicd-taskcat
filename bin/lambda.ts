@@ -3,6 +3,7 @@ import lambda = require('@aws-cdk/aws-lambda');
 import { Bucket } from '@aws-cdk/aws-s3';
 import { Role } from '@aws-cdk/aws-iam';
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
 
 export interface LambdaProps {
     LambdaZipsBucket: string;
@@ -19,12 +20,11 @@ export class Lambda extends cdk.Construct {
 
     constructor(parent: cdk.Construct, name: string, props: LambdaProps) {
         super(parent, name);
-        var bucket = Bucket.import(this, 'lambdazipsbucket', {
+        const bucket = Bucket.import(this, 'lambdazipsbucket', {
             bucketName: props.LambdaZipsBucket
         });
-        var key = `${props.QSS3KeyPrefix}functions/package/git_merge.zip`;
-        var deployStage = props.pipeline.addStage('Deploy');
-        var gitMergeLambda = new lambda.Function(this, 'Git_Merge', {
+        const key = `${props.QSS3KeyPrefix}functions/package/git_merge.zip`;
+        const gitMergeLambda = new lambda.Function(this, 'Git_Merge', {
             runtime: lambda.Runtime.Python36,
             timeout: 30,
             code: lambda.Code.bucket(bucket, key),
@@ -33,14 +33,20 @@ export class Lambda extends cdk.Construct {
             functionName: 'Git_Merge',
             role: props.GitMergeRole,
         });
-        gitMergeLambda.addToPipeline(deployStage, 'GitMergeLambda', {
+        const lambdaAction = new codepipeline_actions.LambdaInvokeAction({
+            actionName: 'Lambda',
             runOrder: 3,
+            lambda: gitMergeLambda,
             userParameters: JSON.stringify({
                 "owner": props.GitHubUser,
                 "repo": props.GitHubRepoName,
                 "baseBranch": props.ReleaseBranch,
                 "headBranch": props.SourceRepoBranch
             })
-        })
+        });
+        props.pipeline.addStage({
+            name: 'Lambda',
+            actions:[lambdaAction]
+        });
     }
 }

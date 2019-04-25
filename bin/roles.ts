@@ -19,11 +19,11 @@ export class Roles extends cdk.Construct {
         });
         this.GitMergeRole.addToPolicy(new iam.PolicyStatement(PolicyStatementEffect.Allow)
             .addActions("logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents")
-            .addResource(`arn:aws:logs:${new cdk.Aws().region}:${new cdk.Aws().accountId}:log-group:/aws/lambda/*`)
+            .addResource(`arn:aws:logs:${cdk.Aws.region}:${cdk.Aws.accountId}:log-group:/aws/lambda/*`)
         );
         this.GitMergeRole.addToPolicy(new iam.PolicyStatement(PolicyStatementEffect.Allow)
             .addActions("codepipeline:GetPipeline", "codepipeline:GetPipelineExecution", "codepipeline:GetPipelineState", "codepipeline:ListPipelines", "codepipeline:ListPipelineExecutions")
-            .addResource(`arn:aws:codepipeline:${new cdk.Aws().region}:${new cdk.Aws().accountId}:*`)
+            .addResource(`arn:aws:codepipeline:${cdk.Aws.region}:${cdk.Aws.accountId}:*`)
         );
         this.GitMergeRole.addToPolicy(new iam.PolicyStatement(PolicyStatementEffect.Allow)
             .addActions("codepipeline:GetJobDetails", "codepipeline:PutJobSuccessResult", "codepipeline:PutJobFailureResult")

@@ -43,7 +43,7 @@ class TaskcatCiPipelineStack extends cdk.Stack {
     const codePipeline = new CodePipeline(this, 'codepipeline', {
       artifactBucketRef: s3.ArtifactBucket
     });
-    new GitHub(this, 'GitHubSource', {
+    const github = new GitHub(this, 'GitHubSource', {
       pipeline: codePipeline.Pipeline,
       GitHubUser: settings.GitHubUser,
       GitHubOAuthToken: settings.GitHubOAuthToken,
@@ -52,6 +52,7 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       ReleaseBranch: settings.ReleaseBranch,
     });
     new CodeBuild(this, 'CodeBuild', {
+      input: github.SourceOutput,
       pipeline: codePipeline.Pipeline,
       role: roles.CodeBuildServiceRole,
       githubRepoName: settings.GitHubRepoName,
@@ -67,12 +68,12 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       SourceRepoBranch: settings.SourceRepoBranch,
       ReleaseBranch: settings.ReleaseBranch
     });
-    var awsRegion = new cdk.Aws().region;
-    new cdk.Output(this, 'CodePipelineURL', {
+    var awsRegion = cdk.Aws.region;
+    new cdk.CfnOutput(this, 'CodePipelineURL', {
       description: 'The URL of the created Pipeline',
       value: `https://${awsRegion}.console.aws.amazon.com/codepipeline/home?region=${awsRegion}#/view/${codePipeline.Pipeline.pipelineName}`,
     });
-    new cdk.Output(this, 'TaskCatReports', {
+    new cdk.CfnOutput(this, 'TaskCatReports', {
       description: 'This is an output of the template',
       value: `s3://${s3.ArtifactBucket.bucketArn}/taskcat_reports/`
     });

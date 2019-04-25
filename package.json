@@ -12,17 +12,18 @@
 		"cdk": "cdk"
 	},
 	"devDependencies": {
-		"@types/node": "^11.9.4",
-		"typescript": "^3.1.2",
-		"aws-cdk": "^0.24.1"
+		"@types/node": "^11.13.7",
+		"typescript": "^3.4.5",
+		"aws-cdk": "^0.29.0"
 	},
 	"dependencies": {
-		"@aws-cdk/aws-cloudformation": "^0.24.1",
-		"@aws-cdk/aws-codebuild": "^0.24.1",
-		"@aws-cdk/aws-codedeploy": "^0.24.1",
-		"@aws-cdk/aws-codepipeline": "^0.24.1",
-		"@aws-cdk/aws-lambda": "^0.24.1",
-		"@aws-cdk/aws-s3": "^0.24.1",
-		"@aws-cdk/cdk": "^0.24.1"
+		"@aws-cdk/aws-cloudformation": "^0.29.0",
+		"@aws-cdk/aws-codebuild": "^0.29.0",
+		"@aws-cdk/aws-codedeploy": "^0.29.0",
+		"@aws-cdk/aws-codepipeline": "^0.29.0",
+		"@aws-cdk/aws-codepipeline-actions": "^0.29.0",
+		"@aws-cdk/aws-lambda": "^0.29.0",
+		"@aws-cdk/aws-s3": "^0.29.0",
+		"@aws-cdk/cdk": "^0.29.0"
 	}
 }

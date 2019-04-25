@@ -1,5 +1,6 @@
 import cdk = require('@aws-cdk/cdk');
 import codepipeline = require('@aws-cdk/aws-codepipeline');
+import codepipeline_actions = require('@aws-cdk/aws-codepipeline-actions');
 export interface GitHubProps {
     pipeline: codepipeline.Pipeline;
     GitHubUser: string;
@@ -9,18 +10,23 @@ export interface GitHubProps {
     ReleaseBranch: string;
 }
 export class GitHub extends cdk.Construct {
+    SourceOutput: codepipeline.Artifact;
     constructor(parent: cdk.Construct, name: string, props: GitHubProps) {
         super(parent, name);
-
-        const sourceStage = props.pipeline.addStage('Source');
-        new codepipeline.GitHubSourceAction(this, 'GitHub', {
-            stage: sourceStage,
+        this.SourceOutput = new codepipeline.Artifact();
+        const sourceAction = new codepipeline_actions.GitHubSourceAction({
+            actionName:'GitHubSource',
             owner: props.GitHubUser,
             repo: props.GitHubRepoName,
+            output: this.SourceOutput,
             branch: props.SourceRepoBranch,
-            oauthToken: new cdk.Secret(props.GitHubOAuthToken),
+            oauthToken: new cdk.SecretValue(props.GitHubOAuthToken),
             pollForSourceChanges: true,
             runOrder: 1
+        });
+        props.pipeline.addStage({
+            name: 'Source',
+            actions: [sourceAction]
         });
     }
 }
