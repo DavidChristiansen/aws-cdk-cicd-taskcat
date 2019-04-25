@@ -12,8 +12,8 @@ export interface LambdaProps {
     pipeline: codepipeline.Pipeline;
     GitHubUser: string;
     GitHubRepoName: string;
-    SourceRepoBranch: string;
-    ReleaseBranch: string;
+    BaseBranch: string;
+    HeadBranch: string;
 }
 export class Lambda extends cdk.Construct {
     public readonly GitMergeLambda: lambda.Function;
@@ -40,8 +40,8 @@ export class Lambda extends cdk.Construct {
             userParameters: JSON.stringify({
                 "owner": props.GitHubUser,
                 "repo": props.GitHubRepoName,
-                "baseBranch": props.ReleaseBranch,
-                "headBranch": props.SourceRepoBranch
+                "baseBranch": props.BaseBranch,
+                "headBranch": props.HeadBranch
             })
         });
         props.pipeline.addStage({

@@ -6,8 +6,7 @@ export interface GitHubProps {
     GitHubUser: string;
     GitHubOAuthToken: string;
     GitHubRepoName: string;
-    SourceRepoBranch: string;
-    ReleaseBranch: string;
+    HeadBranch: string;
 }
 export class GitHub extends cdk.Construct {
     SourceOutput: codepipeline.Artifact;
@@ -19,7 +18,7 @@ export class GitHub extends cdk.Construct {
             owner: props.GitHubUser,
             repo: props.GitHubRepoName,
             output: this.SourceOutput,
-            branch: props.SourceRepoBranch,
+            branch: props.HeadBranch,
             oauthToken: new cdk.SecretValue(props.GitHubOAuthToken),
             pollForSourceChanges: true,
             runOrder: 1

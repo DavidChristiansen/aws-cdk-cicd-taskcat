@@ -14,8 +14,8 @@ interface Settings {
   GitHubUser: string,
   GitHubOAuthToken: string,
   GitHubRepoName: string,
-  SourceRepoBranch: string,
-  ReleaseBranch: string
+  HeadBranch: string,
+  BaseBranch: string
 }
 
 class TaskcatCiPipelineStack extends cdk.Stack {
@@ -26,9 +26,9 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       QSS3KeyPrefix: "quickstart-taskcat-ci/",
       GitHubUser: this.node.getContext('githubuser'),
       GitHubOAuthToken: this.node.getContext('authtoken'),
-      GitHubRepoName: this.node.getContext('githubreponame'),
-      SourceRepoBranch: "develop",
-      ReleaseBranch: "master"
+      GitHubRepoName: this.node.getContext('github_repo_name'),
+      HeadBranch: this.node.getContext('github_repo_branch_head'),
+      BaseBranch: this.node.getContext('github_repo_branch_base'),
     };
     const s3 = new S3(this, 's3');
     const cloudFormation = new CloudFormation(this, 'cloudFormation', {
@@ -48,8 +48,7 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       GitHubUser: settings.GitHubUser,
       GitHubOAuthToken: settings.GitHubOAuthToken,
       GitHubRepoName: settings.GitHubRepoName,
-      SourceRepoBranch: settings.SourceRepoBranch,
-      ReleaseBranch: settings.ReleaseBranch,
+      HeadBranch: settings.HeadBranch,
     });
     new CodeBuild(this, 'CodeBuild', {
       input: github.SourceOutput,
@@ -65,8 +64,8 @@ class TaskcatCiPipelineStack extends cdk.Stack {
       pipeline: codePipeline.Pipeline,
       GitHubUser: settings.GitHubUser,
       GitHubRepoName: settings.GitHubRepoName,
-      SourceRepoBranch: settings.SourceRepoBranch,
-      ReleaseBranch: settings.ReleaseBranch
+      HeadBranch: settings.HeadBranch,
+      BaseBranch: settings.BaseBranch
     });
     var awsRegion = cdk.Aws.region;
     new cdk.CfnOutput(this, 'CodePipelineURL', {
